@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  cost-program-configuration:
+    container_name: cost-program-configuration
+    platform: linux/amd64
+    environment:
+      - PORT_APP
+      - DOCKER_PORT_APP
+    depends_on:
+      - cost-program-db
+    build:
+      context: .
+      dockerfile: docker/local/Dockerfile
+    ports:
+      - "${DOCKER_PORT_APP}:${PORT_APP}"
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+
+  cost-program-db:
+    container_name: "cost-program-db"
+    image: "postgres:14"
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DOCKER_DB_PORT}:${DB_PORT}"
